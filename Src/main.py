@@ -20,13 +20,9 @@ debug_modus = False
 ###____________________________________MAIN_LOOP______________________________________________________________________####
 #####
 
-
-
-
 if __name__ == "__main__":
     param = build_config()
     
-    #i = MotorUebersetzung(param.v_max, param.n_max, param.RadDurchmesser)
 
     ###_____________Function_______LookupTabelle______________________________####
     print("_Functioncall_LookupTable_")
@@ -37,8 +33,6 @@ if __name__ == "__main__":
     EM_LookupTable = GenLookupTable(path_T, path_n, path_Z)
     eta_interp = make_eta_interpolator(EM_LookupTable)
     print("_LookupTable_finished_")
-    
-    
     
     ###____________________Range_und_Elevation______________________________####
     print("_Functioncall_Range_to_elevation_")
@@ -86,17 +80,10 @@ if __name__ == "__main__":
         )
 
         strecke += velocity * dt
-        
-
         # lineare Interpolation der Steigung auf die aktuelle Strecke
         steigung = float(np.interp(strecke, dist_idx, angles))
-        
         Steigungswinkel.append(steigung)
         
-
-
-
-
         F_roll = rollwiderstand(param.m_ges, param.c_r)
         F_luft = luftwiderstand(velocity, param.cw, param.A)
         F_steig = steigungswiderstand(param.m_ges, steigung)
@@ -110,27 +97,21 @@ if __name__ == "__main__":
         F_beschl_list.append(F_beschl)
         F_ges_list.append(F_ges)
 
-
         F_trac = max(F_ges, 0.0)
-
+        
         n_rad = RadDrehzahl(velocity, param.RadDurchmesser)
         n_Motor = MotorDrehzahl(n_rad, param.i)
 
         trq_rad = Radmoment(F_ges, param.RadDurchmesser)
         trq_motor = Motormoment(trq_rad, param.eta_Antrieb, param.i)
         Drehmoment.append(trq_motor)
-        
-
         eta_Ltb = eta_interp((trq_motor, n_Motor))  # mit [Torque, RPM]
-        
 
         Fahrleistung_EL = (
             Fahrleistung(F_trac, velocity, eta_Ltb) / 1000
         )  # elektrische Leistung in kW
        
-
         ##          Rekuperation
-
         P_mech = F_ges * velocity  # W, can be negative
         if P_mech >= 0:
             P_batt_kW = (P_mech / eta_Ltb) / 1000.0  # traction draws from battery
@@ -142,13 +123,10 @@ if __name__ == "__main__":
             max(0.0, param.Energie_verbrauch + P_batt_kW * (dt / 3600.0)),
         )
 
-
         State_of_Charge = 100.0 * (1.0 - param.Energie_verbrauch / param.E_Battrie)
         State_of_Charge = max(0.0, min(100.0, State_of_Charge))
         soc.append(State_of_Charge)
 
-        
-        
         if debug_modus == True:
             print(f"Indexnummer: {index}")
             print(f"Zurueckgelegte Distanz in m: {strecke:.1f}")
@@ -156,7 +134,6 @@ if __name__ == "__main__":
             
             print(f"Geschwindigkeit:        {velocity:.1f} m/s")
             print(f"Beschleunigung:        {acceleration:.1f} m/s^2")
-            
             print(f"Rollwiderstand:         {F_roll:.1f} N")
             print(f"Luftwiderstand:         {F_luft:.1f} N")
             print(f"Steigungswiderstand:    {F_steig:.1f} N")
@@ -173,7 +150,6 @@ if __name__ == "__main__":
             
         index = index + 1
         
-
     # ______________________________________________________________________________________________________________________#
 
     print("_Speed_Vector_Loop_finished_")
