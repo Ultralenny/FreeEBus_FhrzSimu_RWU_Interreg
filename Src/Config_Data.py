@@ -22,6 +22,9 @@ class Config:
     Energie_verbrauch: float
     i : float
 
+
+
+# Diese Daten entsprechen dem Volvo 7900 Electric Bus
 def build_config() -> Config:
     m_Fahrz = 18000
     m_zusatz = 200
