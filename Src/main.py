@@ -23,7 +23,6 @@ debug_modus = False
 if __name__ == "__main__":
     param = build_config()
     
-
     ###_____________Function_______LookupTabelle______________________________####
     print("_Functioncall_LookupTable_")
     path_T = r"Data\Lookuptable\Ltb_Bus\wirk_T.csv"
@@ -32,7 +31,7 @@ if __name__ == "__main__":
     
     EM_LookupTable = GenLookupTable(path_T, path_n, path_Z)
     eta_interp = make_eta_interpolator(EM_LookupTable)
-    print("_LookupTable_finished_")
+    
     
     ###____________________Range_und_Elevation______________________________####
     print("_Functioncall_Range_to_elevation_")
@@ -40,11 +39,8 @@ if __name__ == "__main__":
     dist_idx = Range_Elevation.index.to_numpy(float)  # strecke
     angles = Range_Elevation.iloc[:, 0].to_numpy(float)  # elevation angle
 
-    print("_Functioncall_Range_to_elevation_finished")
-
     ###____________________Speed_Vector______________________________####
     print("_Functioncall_Speed_Vector_")
-    print("__Speed_Vector_Loop Start")
     Speed_Vector = Datafield_Speed_Vector()
 
     #### Setup for LOOP    # Function State initialisierung
@@ -61,7 +57,6 @@ if __name__ == "__main__":
     F_ges_list = []
     Steigungswinkel = []
     Drehmoment = []
-
     soc = []
 
     t = np.arange(len(Speed_Vector)) * dt  # time axis
@@ -226,3 +221,4 @@ if __name__ == "__main__":
     plt.show()
 
 # ______________________________________________________________________________________________________________________#
+print("Main Function: Done")
