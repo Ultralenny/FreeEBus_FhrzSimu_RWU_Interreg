@@ -8,42 +8,25 @@ from Config_Data import *
 from Loop_Config import *
 
 #####
+#--------------------------Debug Settings ---------------------------------------------------
+#####
+debug_modus = False
+
+
+
+
+
+#####
 ###____________________________________MAIN_LOOP______________________________________________________________________####
 #####
 
 
+
+
 if __name__ == "__main__":
     param = build_config()
-    ########################################   Function Build Config
-    # Beispielwerte für ein typisches Auto
-    """
-    m_Fahrz = 18000
-    m_zusatz = 200
-    anzahl_passenger = 20
-    m_passenger = 80 * anzahl_passenger
-    m_ges = m_Fahrz + m_passenger + m_zusatz
-
-    v_max = 120 / 3.6  # maximale Geschwindigkeit in m/s
-    n_max = 11000  # maximale MotorDrehzahl
-    Power_max = 200000  # 200kw
-
-    c_r = 0.006
-    cw = 0.4
-
-    hoehe = 2.96
-    breite = 2.55
-
-    A = hoehe * breite  # m²
-
-    RadDurchmesser = 1.053  # Raddurchmesser in m
-    eta_Antrieb = 0.90
-    eta_reku = 0.7
-
-    E_Battrie = 565  # Batterie Energieinhalt in kWh
-    # 12M- bus = 470 kWh I      18.7M-Bus = 565 kWh
-    Energie_verbrauch = 0
-    """
-    i = MotorUebersetzung(param.v_max, param.n_max, param.RadDurchmesser)
+    
+    #i = MotorUebersetzung(param.v_max, param.n_max, param.RadDurchmesser)
 
     ###_____________Function_______LookupTabelle______________________________####
     print("_Functioncall_LookupTable_")
@@ -93,7 +76,6 @@ if __name__ == "__main__":
     #####________________________________________Main_FOR_LOOP_____________________________________________________#####
 
     for row in Speed_Vector.to_numpy(copy=False):
-        print(f"Indexnummer: {index}")
         velocity = float(row[0])
 
         if index + 1 >= len(Speed_Vector):
@@ -104,14 +86,16 @@ if __name__ == "__main__":
         )
 
         strecke += velocity * dt
-        print(f"Zurueckgelegte Distanz in m: {strecke:.1f}")
+        
 
         # lineare Interpolation der Steigung auf die aktuelle Strecke
         steigung = float(np.interp(strecke, dist_idx, angles))
-        print(f"Steigunggswinkel bei km {(strecke / 1000):.1f}: {steigung:.1f}")
+        
         Steigungswinkel.append(steigung)
-        print(f"Geschwindigkeit:        {velocity:.1f} m/s")
-        print(f"Beschleunigung:        {acceleration:.1f} m/s^2")
+        
+
+
+
 
         F_roll = rollwiderstand(param.m_ges, param.c_r)
         F_luft = luftwiderstand(velocity, param.cw, param.A)
@@ -126,30 +110,24 @@ if __name__ == "__main__":
         F_beschl_list.append(F_beschl)
         F_ges_list.append(F_ges)
 
-        print(f"Rollwiderstand:         {F_roll:.1f} N")
-        print(f"Luftwiderstand:         {F_luft:.1f} N")
-        print(f"Steigungswiderstand:    {F_steig:.1f} N")
-        print(f"Beschleunigungswiderst: {F_beschl:.1f} N")
-        print(f"Gesamtfahrwiderstand:   {F_ges:.1f} N")
 
         F_trac = max(F_ges, 0.0)
 
         n_rad = RadDrehzahl(velocity, param.RadDurchmesser)
-        n_Motor = MotorDrehzahl(n_rad, i)
+        n_Motor = MotorDrehzahl(n_rad, param.i)
 
         trq_rad = Radmoment(F_ges, param.RadDurchmesser)
-        trq_motor = Motormoment(trq_rad, param.eta_Antrieb, i)
+        trq_motor = Motormoment(trq_rad, param.eta_Antrieb, param.i)
         Drehmoment.append(trq_motor)
-        print(f"Drehzahl Motor:     {n_Motor:1f} 1/min")
-        print(f"Drehmoment Motor:   {trq_motor:.1f} Nm")
+        
 
         eta_Ltb = eta_interp((trq_motor, n_Motor))  # mit [Torque, RPM]
-        print(f"Wirkungsgrad:       {eta_Ltb:.1f}")
+        
 
         Fahrleistung_EL = (
             Fahrleistung(F_trac, velocity, eta_Ltb) / 1000
         )  # elektrische Leistung in kW
-        print(f"Fahrleistung elektrisch: {Fahrleistung_EL:.1f} kW")
+       
 
         ##          Rekuperation
 
@@ -164,16 +142,37 @@ if __name__ == "__main__":
             max(0.0, param.Energie_verbrauch + P_batt_kW * (dt / 3600.0)),
         )
 
-        print(f"Energieverbauch: {param.Energie_verbrauch:.1f} kWh")
 
         State_of_Charge = 100.0 * (1.0 - param.Energie_verbrauch / param.E_Battrie)
         State_of_Charge = max(0.0, min(100.0, State_of_Charge))
         soc.append(State_of_Charge)
 
-        print(f"State of Charge: {State_of_Charge:.2f} %")
+        
+        
+        if debug_modus == True:
+            print(f"Indexnummer: {index}")
+            print(f"Zurueckgelegte Distanz in m: {strecke:.1f}")
+            print(f"Steigunggswinkel bei km {(strecke / 1000):.1f}: {steigung:.1f}")
+            
+            print(f"Geschwindigkeit:        {velocity:.1f} m/s")
+            print(f"Beschleunigung:        {acceleration:.1f} m/s^2")
+            
+            print(f"Rollwiderstand:         {F_roll:.1f} N")
+            print(f"Luftwiderstand:         {F_luft:.1f} N")
+            print(f"Steigungswiderstand:    {F_steig:.1f} N")
+            print(f"Beschleunigungswiderst: {F_beschl:.1f} N")
+            print(f"Gesamtfahrwiderstand:   {F_ges:.1f} N")
+            print(f"Drehzahl Motor:     {n_Motor:1f} 1/min")
+            print(f"Drehmoment Motor:   {trq_motor:.1f} Nm")
+            print(f"Wirkungsgrad:       {eta_Ltb:.1f}")
 
+            print(f"Fahrleistung elektrisch: {Fahrleistung_EL:.1f} kW")
+            print(f"Energieverbauch: {param.Energie_verbrauch:.1f} kWh")
+            print(f"State of Charge: {State_of_Charge:.2f} %")
+            print("______                          ____")
+            
         index = index + 1
-        print("______                          ____")
+        
 
     # ______________________________________________________________________________________________________________________#
 
