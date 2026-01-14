@@ -46,9 +46,9 @@ if __name__ == "__main__":
 
     ###_____________Function_______LookupTabelle______________________________####
     print("_Functioncall_LookupTable_")
-    path_T = r"C:\Users\Leonard Schmitz\Documents\VisualStudio\FreeEBus_RWU.venv\Leo\Lookuptable\Ltb_Bus\wirk_T.csv"
-    path_n = r"C:\Users\Leonard Schmitz\Documents\VisualStudio\FreeEBus_RWU.venv\Leo\Lookuptable\Ltb_Bus\wirk_n.csv"
-    path_Z = r"C:\Users\Leonard Schmitz\Documents\VisualStudio\FreeEBus_RWU.venv\Leo\Lookuptable\Ltb_Bus\wirk_Z.csv"
+    path_T = r"Data\Lookuptable\Ltb_Bus\wirk_T.csv"
+    path_n = r"Data\Lookuptable\Ltb_Bus\wirk_n.csv"
+    path_Z = r"Data\Lookuptable\Ltb_Bus\wirk_Z.csv"
     
     EM_LookupTable = GenLookupTable(path_T, path_n, path_Z)
     eta_interp = make_eta_interpolator(EM_LookupTable)

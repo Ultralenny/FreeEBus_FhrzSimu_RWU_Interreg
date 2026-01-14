@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from Elektromotor import MotorUebersetzung
 
 @dataclass
 class Config:
@@ -19,7 +20,7 @@ class Config:
     eta_reku: float
     E_Battrie: float
     Energie_verbrauch: float
-
+    i : float
 
 def build_config() -> Config:
     m_Fahrz = 18000
@@ -42,6 +43,8 @@ def build_config() -> Config:
     Energie_verbrauch = 0
     
     i = MotorUebersetzung(v_max, n_max, RadDurchmesser)
+       
+    
     return Config(
         m_Fahrz,
         m_zusatz,

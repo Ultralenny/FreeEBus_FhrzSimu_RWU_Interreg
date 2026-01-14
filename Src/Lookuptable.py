@@ -72,7 +72,7 @@ def load_default_eta() -> Tuple[pd.DataFrame, Callable]:
     """
     Baut die Lookup-Tabelle aus den Standarddateien und liefert (lookup_df, eta_interp).
     """
-    base_dir = Path(__file__).resolve().parent / "Lookuptable" / "Ltb_Bus"
+    base_dir = Path(__file__).resolve().parent[1] / "Lookuptable" / "Ltb_Bus"
     path_T = base_dir / "wirk_T.csv"
     path_n = base_dir / "wirk_n.csv"
     path_Z = base_dir / "wirk_Z.csv"

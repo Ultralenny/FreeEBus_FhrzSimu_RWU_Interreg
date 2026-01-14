@@ -3,7 +3,7 @@ import pandas as pd
 
 def Datafield_range_to_elevation():
     Datafield = pd.read_csv(
-        r"C:\Users\Leonard Schmitz\Documents\VisualStudio\FreeEBus_RWU.venv\Leo\Fahrprofil 410315_6\inclination_410315_6.csv.csv",
+        r"Data\Fahrprofil 410315_6\inclination_410315_6.csv",
         delimiter=",",
         header=None,
         decimal=".",
@@ -15,7 +15,7 @@ def Datafield_range_to_elevation():
 
 def Datafield_Speed_Vector():
     Datafield = pd.read_csv(
-        r"C:\Users\Leonard Schmitz\Documents\VisualStudio\FreeEBus_RWU.venv\Leo\Fahrprofil 410315_6\v_uni_matched_410315_6.csv.csv",
+        r"Data\Fahrprofil 410315_6\v_uni_matched_410315_6.csv",
         delimiter=",",
         header=None,
         names=["velocity_ms"],
