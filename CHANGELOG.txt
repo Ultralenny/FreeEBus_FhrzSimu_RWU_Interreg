@@ -1,2 +1,4 @@
 Version 1.0     -14.01.2026
-Start of complete project
+    Start of complete project
+    correction of FilePath-errors:
+        changed filepaths to relative pathing
