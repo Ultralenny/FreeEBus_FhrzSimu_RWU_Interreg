@@ -21,7 +21,7 @@ class Config:
     E_Battrie: float
     Energie_verbrauch: float
     i : float
-
+    
 
 
 # Diese Daten entsprechen dem Volvo 7900 Electric Bus

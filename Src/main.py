@@ -4,7 +4,7 @@ from FahrRes import *
 from LookupTable import *
 from Elektromotor import *
 from Fahrprofil import *
-from Config_Data import *
+from Vehicle_Data import *
 from Loop_Config import *
 
 #####
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     Steigungswinkel = []
     Drehmoment = []
     soc = []
-
+    Energie_usage = []
     t = np.arange(len(Speed_Vector)) * dt  # time axis
     v = Speed_Vector.iloc[:, 0].to_numpy(float)  # speed column
 
@@ -99,6 +99,7 @@ if __name__ == "__main__":
         trq_motor = Motormoment(trq_rad, param.eta_Antrieb, param.i)
         Drehmoment.append(trq_motor)
         eta_Ltb = eta_interp((trq_motor, n_Motor))  # mit [Torque, RPM]
+        
 
         Fahrleistung_EL = (
             Fahrleistung(F_trac, velocity, eta_Ltb) / 1000
@@ -115,7 +116,10 @@ if __name__ == "__main__":
             param.E_Battrie,
             max(0.0, param.Energie_verbrauch + P_batt_kW * (dt / 3600.0)),
         )
-
+        Energie_usage.append(param.Energie_verbrauch)
+        
+        
+        
         State_of_Charge = 100.0 * (1.0 - param.Energie_verbrauch / param.E_Battrie)
         State_of_Charge = max(0.0, min(100.0, State_of_Charge))
         soc.append(State_of_Charge)
@@ -148,6 +152,20 @@ if __name__ == "__main__":
     print("_Speed_Vector_Loop_finished_")
     print("_Functioncall_Speed_Vector_finished_")
     print("_Plot_all_Resistances")
+
+
+    plt.figure(figsize=(10, 4))
+    plt.plot(t_axis, Energie_usage, label="Energieverbauch in kWh")
+    plt.xlabel("Zeit [s]")
+    plt.ylabel("Energie [kWh]")
+    plt.title("Energieverbrauch")
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    #plt.show()
+
+
+
 
     plt.figure(figsize=(10, 4))
     plt.plot(t_axis, soc, label="SOC")
@@ -191,7 +209,7 @@ if __name__ == "__main__":
 
     # ______________________________________________________________________________________________________________________#
 
-    fig, axes = plt.subplots(6, 1, figsize=(10, 10), sharex=True)
+    fig, axes = plt.subplots(5, 1, figsize=(10, 10), sharex=True)
     axes[0].plot(t_axis, F_roll_list, color="tab:blue")
     axes[0].set_ylabel("Roll [N]")
 
@@ -208,10 +226,11 @@ if __name__ == "__main__":
     axes[4].set_ylabel("Gesamt [N]")
     axes[4].set_xlabel("Zeit [s]")
 
+    """
     axes[5].plot(t_axis, Drehmoment, color="cyan")
     axes[5].set_ylabel("Drehmoment [Nm]")
     axes[5].set_xlabel("Zeit [s]")
-
+    """
     for ax in axes:
         ax.grid(True)
 
