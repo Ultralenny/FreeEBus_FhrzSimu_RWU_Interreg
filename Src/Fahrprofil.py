@@ -26,7 +26,7 @@ def Datafield_Speed_Vector():
 
 def Datafield_validation():
     Datafield = pd.read_csv(
-        r"C:\Users\Leonard Schmitz\Documents\VisualStudio\FreeEBus_RWU.venv\Leo\Fahrprofil 410315_6\Valdierung_80kmh_1Stunde.csv",
+        r"Data\Fahrprofil 410315_6\Valdierung_80kmh_1Stunde.csv",
         delimiter=",",
         header=None,
         names=["velocity_ms"],

@@ -4,7 +4,7 @@ from FahrRes import *
 from LookupTable import *
 from Elektromotor import *
 from Fahrprofil import *
-from Config_Data import *
+from Vehicle_Data import *
 from Loop_Config import *
 
 
@@ -36,9 +36,10 @@ if __name__ == "__main__":
 
     ###_____________Function_______LookupTabelle______________________________####
     print("_Functioncall_LookupTable_")
-    path_T = r"C:\Users\Leonard Schmitz\Documents\VisualStudio\FreeEBus_RWU.venv\Leo\Lookuptable\Ltb_Bus\wirk_T.csv"
-    path_n = r"C:\Users\Leonard Schmitz\Documents\VisualStudio\FreeEBus_RWU.venv\Leo\Lookuptable\Ltb_Bus\wirk_n.csv"
-    path_Z = r"C:\Users\Leonard Schmitz\Documents\VisualStudio\FreeEBus_RWU.venv\Leo\Lookuptable\Ltb_Bus\wirk_Z.csv"
+    path_T = r"Data\Lookuptable\Ltb_Bus\wirk_T.csv"
+    path_n = r"Data\Lookuptable\Ltb_Bus\wirk_n.csv"
+    path_Z = r"Data\Lookuptable\Ltb_Bus\wirk_Z.csv"
+    
     
     EM_LookupTable = GenLookupTable(path_T, path_n, path_Z)
     eta_interp = make_eta_interpolator(EM_LookupTable)
@@ -76,7 +77,7 @@ if __name__ == "__main__":
     F_ges_list = []
     Steigungswinkel = []
     Drehmoment = []
-
+    Energie_usage = []
     soc = []
 
     t = np.arange(len(Speed_Vector)) * dt  # time axis
@@ -156,7 +157,8 @@ if __name__ == "__main__":
             param.E_Battrie,
             max(0.0, param.Energie_verbrauch + P_batt_kW * (dt / 3600.0)),
         )
-
+        Energie_usage.append(param.Energie_verbrauch)
+        
         print(f"Energieverbauch: {param.Energie_verbrauch:.1f} kWh")
 
         State_of_Charge = 100.0 * (1.0 - param.Energie_verbrauch / param.E_Battrie)
@@ -173,6 +175,21 @@ if __name__ == "__main__":
     print("_Speed_Vector_Loop_finished_")
     print("_Functioncall_Speed_Vector_finished_")
     print("_Plot_all_Resistances")
+
+    
+    plt.figure(figsize=(10, 4))
+    plt.plot(t_axis, Energie_usage, label="Energieverbauch in kWh")
+    plt.xlabel("Zeit [s]")
+    plt.ylabel("Energie [kWh]")
+    plt.title("Energieverbrauch")
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    #plt.show()
+
+
+
+
 
     plt.figure(figsize=(10, 4))
     plt.plot(t_axis, soc, label="SOC")
