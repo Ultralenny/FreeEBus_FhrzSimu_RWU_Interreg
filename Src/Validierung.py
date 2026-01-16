@@ -6,7 +6,7 @@ from Elektromotor import *
 from Fahrprofil import *
 from Vehicle_Data import *
 from Loop_Config import *
-
+from Vehicle_config_Tesla3RWD import * 
 
 #   Erstellt von: Leonard Schmitz, Hochschule Ravensburg-Weingarten
 #   Projekt:    FreeE-Bus Interreg
@@ -28,7 +28,7 @@ from Loop_Config import *
 
 
 if __name__ == "__main__":
-    param = build_config()
+    param = build_config_tesla()
     ########################################   Function Build Config
     # Beispielwerte für ein typisches Auto
     
@@ -41,8 +41,8 @@ if __name__ == "__main__":
     path_Z = r"Data\Lookuptable\Ltb_Bus\wirk_Z.csv"
     
     
-    EM_LookupTable = GenLookupTable(path_T, path_n, path_Z)
-    eta_interp = make_eta_interpolator(EM_LookupTable)
+    EM_LookupTable = param.eta_Antrieb
+    eta_interp = param.eta_Antrieb
     print("_LookupTable_finished_")
     
     
@@ -137,7 +137,7 @@ if __name__ == "__main__":
         print(f"Drehzahl Motor:     {n_Motor:1f} 1/min")
         print(f"Drehmoment Motor:   {trq_motor:.1f} Nm")
 
-        eta_Ltb = eta_interp((trq_motor, n_Motor))  # mit [Torque, RPM]
+        eta_Ltb = 0.92  # mit [Torque, RPM]
         print(f"Wirkungsgrad:       {eta_Ltb:.1f}")
 
         Fahrleistung_EL = (
