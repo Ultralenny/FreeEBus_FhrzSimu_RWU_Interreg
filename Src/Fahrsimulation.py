@@ -1,3 +1,11 @@
+
+    """
+    kann evtl gelöscht werden, muss ich aber noch schauen   -Leo
+    """
+
+
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
