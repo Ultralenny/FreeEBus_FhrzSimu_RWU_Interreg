@@ -6,11 +6,17 @@ from Elektromotor import *
 from Fahrprofil import *
 from Vehicle_Data import *
 from Loop_Config import *
+from Debug import write_debug_csv
 
 #####
 #--------------------------Debug Settings ---------------------------------------------------
 #####
 debug_modus = False
+if debug_modus == True:
+    debug_csv_path = r"Debug\debug_output.csv"
+    debug_csv_delimiter = ";"
+    debug_csv_decimal_separator = ","
+    debug_csv_float_format = ".6f"
 
 
 #####
@@ -59,6 +65,7 @@ if __name__ == "__main__":
     Energie_usage = []
     t = np.arange(len(Speed_Vector)) * dt  # time axis
     v = Speed_Vector.iloc[:, 0].to_numpy(float)  # speed column
+    debug_rows = []
 
     #####________________________________________Main_FOR_LOOP_____________________________________________________#####
 
@@ -125,9 +132,31 @@ if __name__ == "__main__":
         soc.append(State_of_Charge)
 
         if debug_modus == True:
+            strecke_km = strecke / 1000.0
+            debug_rows.append(
+                {
+                    "index": index,
+                    "strecke_m": float(strecke),
+                    "strecke_km": float(strecke_km),
+                    "steigung_deg": float(steigung),
+                    "velocity_m_s": float(velocity),
+                    "acceleration_m_s2": float(acceleration),
+                    "f_roll_n": float(F_roll),
+                    "f_luft_n": float(F_luft),
+                    "f_steig_n": float(F_steig),
+                    "f_beschl_n": float(F_beschl),
+                    "f_ges_n": float(F_ges),
+                    "n_motor_rpm": float(n_Motor),
+                    "trq_motor_nm": float(trq_motor),
+                    "eta_ltb": float(eta_Ltb),
+                    "fahrleistung_el_kw": float(Fahrleistung_EL),
+                    "energie_verbrauch_kwh": float(param.Energie_verbrauch),
+                    "state_of_charge_pct": float(State_of_Charge),
+                }
+            )
             print(f"Indexnummer: {index}")
             print(f"Zurueckgelegte Distanz in m: {strecke:.1f}")
-            print(f"Steigunggswinkel bei km {(strecke / 1000):.1f}: {steigung:.1f}")
+            print(f"Steigunggswinkel bei km {strecke_km:.1f}: {steigung:.1f}")
             
             print(f"Geschwindigkeit:        {velocity:.1f} m/s")
             print(f"Beschleunigung:        {acceleration:.1f} m/s^2")
@@ -146,6 +175,15 @@ if __name__ == "__main__":
             print("______                          ____")
             
         index = index + 1
+
+    if debug_modus == True:
+        write_debug_csv(
+            debug_csv_path,
+            debug_rows,
+            delimiter=debug_csv_delimiter,
+            decimal_separator=debug_csv_decimal_separator,
+            float_format=debug_csv_float_format,
+        )
         
     # ______________________________________________________________________________________________________________________#
 

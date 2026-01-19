@@ -35,8 +35,8 @@ def build_config() -> Config:
 
     v_max = 120 / 3.6
     n_max = 11000
-    c_r = 0.010
-    cw = 0.6
+    c_r = 0.012
+    cw = 0.7
     hoehe = 2.96
     breite = 2.55
     A = hoehe * breite
