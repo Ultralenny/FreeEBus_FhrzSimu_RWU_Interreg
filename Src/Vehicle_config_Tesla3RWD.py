@@ -27,48 +27,28 @@ class Config:
 # Parameter-Set: Tesla Model 3 Standard / RWD (grobe Auslegung)
 # Werte orientieren sich an veroeffentlichten Spezifikationen (Masse/Abmessungen/Top-Speed)
 def build_config_tesla() -> Config:
-    # Fahrzeugmasse (Leergewicht / curb mass)
-    m_Fahrz = 1760.0
+    
+    m_Fahrz = 1760.0    # Fahrzeugmasse (Leergewicht / curb mass)
+    m_zusatz = 0.0      # zusaetzliche Masse (z.B. Gepaeck/Extras)
 
-    # zusaetzliche Masse (z.B. Gepaeck/Extras)
-    m_zusatz = 0.0
-
-    # Insassen
-    anzahl_passenger = 1
+    anzahl_passenger = 1    
     m_passenger = 75.0 * anzahl_passenger
+    m_ges = m_Fahrz + m_passenger + m_zusatz    # Gesamtmasse
 
-    # Gesamtmasse
-    m_ges = m_Fahrz + m_passenger + m_zusatz
+    v_max = 201.0 / 3.6     # Höchstgeschwindigkeit [m/s]
+    n_max = 18000.0 # maximale Drehzahl der E-Maschine in [1/min]
 
-    # v_max: 201 km/h
-    v_max = 201.0 / 3.6
+    c_r = 0.0101     # Rollwiderstandsbeiwert
+    cw = 0.219 # Luftwiderstandsbeiwert 
 
-    # n_max (Schaetzwert fuer Tesla Model 3 Drive Unit)
-    n_max = 18000.0
 
-    # Rollwiderstandsbeiwert (typisch fuer Pkw mit effizienten Reifen)
-    c_r = 0.0101
-
-    # Luftwiderstandsbeiwert (Model 3 Highland: Cd ~ 0.219)
-    cw = 0.219
-
-    # Abmessungen (m)
-    hoehe = 1.442
+    hoehe = 1.442   # Abmessungen (m)
     breite = 1.848
-
-    # Stirnflaeche (m^2) - publizierter/haeufig genutzter Wert fuer Model 3
-    A = 0.905 * hoehe * breite
-
-    # Raddurchmesser (m) basierend auf 235/45R18: ca. 668.7 mm
-    RadDurchmesser = 0.6687
-
-    # Wirkungsgrade
-    eta_Antrieb = 0.93
+    A = 0.905 * hoehe * breite # Stirnflaeche [m^2]
+    RadDurchmesser = 0.6687     # Raddurchmesser [m] basierend auf 235/45R18: ca. 668.7 mm
+    eta_Antrieb = 0.93  # Wirkungsgrade
     eta_reku = 0.70
-
-    # Batterieenergie (kWh) - nutzbare Kapazitaet (Model 3 RWD)
-    E_Battrie = 57.0
-
+    E_Battrie = 57.0 # Batterieenergie [kWh]
     Energie_verbrauch = 0.0
 
     i = MotorUebersetzung(v_max, n_max, RadDurchmesser)

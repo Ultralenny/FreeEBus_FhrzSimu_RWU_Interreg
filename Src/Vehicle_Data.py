@@ -28,14 +28,15 @@ class Config:
 def build_config() -> Config:
     m_Fahrz = 18000
     m_zusatz = 200
-    anzahl_passenger = 20
-    m_passenger = 80 * anzahl_passenger
+    
+    anzahl_passenger = 10
+    m_passenger = 75 * anzahl_passenger
     m_ges = m_Fahrz + m_passenger + m_zusatz
 
     v_max = 120 / 3.6
     n_max = 11000
-    c_r = 0.006
-    cw = 0.4
+    c_r = 0.010
+    cw = 0.6
     hoehe = 2.96
     breite = 2.55
     A = hoehe * breite

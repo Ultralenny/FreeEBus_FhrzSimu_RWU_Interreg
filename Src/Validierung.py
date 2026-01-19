@@ -6,7 +6,6 @@ from Elektromotor import *
 from Fahrprofil import *
 from Vehicle_Data import *
 from Loop_Config import *
-from Vehicle_config_Tesla3RWD import * 
 
 #   Erstellt von: Leonard Schmitz, Hochschule Ravensburg-Weingarten
 #   Projekt:    FreeE-Bus Interreg
@@ -24,15 +23,15 @@ from Vehicle_config_Tesla3RWD import *
 ###____________________________________MAIN_LOOP______________________________________________________________________####
 #####
 
-### Genau gleich wie Main loop aber das fahrprofil ist 1 Stunde (3600 sekunden) auf 80 km/h
+### Genau gleich wie Main loop aber das fahrprofil ist 1 Stunde (3600 sekunden) auf 100 km/h
 
 
 if __name__ == "__main__":
-    param = build_config_tesla()
+    param = build_config()
     ########################################   Function Build Config
     # Beispielwerte für ein typisches Auto
     
-    i = MotorUebersetzung(param.v_max, param.n_max, param.RadDurchmesser)
+    i = param.i
 
     ###_____________Function_______LookupTabelle______________________________####
     print("_Functioncall_LookupTable_")
@@ -110,7 +109,7 @@ if __name__ == "__main__":
         F_roll = rollwiderstand(param.m_ges, param.c_r)
         F_luft = luftwiderstand(velocity, param.cw, param.A)
         F_steig = steigungswiderstand(param.m_ges, steigung)
-        F_beschl = beschleunigungswiderstand(param.m_Fahrz, acceleration, massenfaktor=1.05)
+        F_beschl = beschleunigungswiderstand(param.m_ges, acceleration, massenfaktor=1.05)
         F_ges = gesamtfahrwiderstand(F_roll, F_luft, F_steig, F_beschl)
 
         t_axis.append(index * dt)
@@ -137,11 +136,12 @@ if __name__ == "__main__":
         print(f"Drehzahl Motor:     {n_Motor:1f} 1/min")
         print(f"Drehmoment Motor:   {trq_motor:.1f} Nm")
 
-        eta_Ltb = 0.92  # mit [Torque, RPM]
-        print(f"Wirkungsgrad:       {eta_Ltb:.1f}")
+        eta_motor = 0.92  # mit [Torque, RPM]
+        eta_total = eta_motor * param.eta_Antrieb
+        print(f"Wirkungsgrad:       {eta_motor:.2f}")
 
         Fahrleistung_EL = (
-            Fahrleistung(F_trac, velocity, eta_Ltb) / 1000
+            Fahrleistung(F_trac, velocity, eta_motor) / 1000
         )  # elektrische Leistung in kW
         print(f"Fahrleistung elektrisch: {Fahrleistung_EL:.1f} kW")
 
@@ -149,7 +149,7 @@ if __name__ == "__main__":
 
         P_mech = F_ges * velocity  # W, can be negative
         if P_mech >= 0:
-            P_batt_kW = (P_mech / eta_Ltb) / 1000.0  # traction draws from battery
+            P_batt_kW = (P_mech / eta_total) / 1000.0  # traction draws from battery
         else:
             P_batt_kW = (P_mech * param.eta_reku) / 1000.0  # regen charges battery (negative)
 
@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
 
 
-
+    """
     plt.figure(figsize=(10, 4))
     plt.plot(t_axis, soc, label="SOC")
     plt.xlabel("Zeit [s]")
@@ -200,12 +200,12 @@ if __name__ == "__main__":
     plt.legend()
     plt.tight_layout()
     plt.show()
-
+    """
 
     v_ms = Speed_Vector.iloc[:, 0].to_numpy(float)  # m/s
     v_kmh = v_ms * 3.6                              # nur für die Anzeige
     t = np.arange(len(v_ms)) * dt
-    dist_m = np.cumsum(v_ms * dt)    / 1000               # m, richtige Strecke
+    dist_m = np.cumsum(v_ms * dt) / 1000  # km, richtige Strecke
 
 
 
@@ -220,7 +220,7 @@ if __name__ == "__main__":
     plt.subplot(3, 1, 1)
     plt.plot(t, v_kmh, label="Geschwindigkeit")
     plt.xlabel("Zeit [s]")
-    plt.ylabel("v [km/s]")
+    plt.ylabel("v [km/h]")
     plt.grid(True)
     plt.legend()
 

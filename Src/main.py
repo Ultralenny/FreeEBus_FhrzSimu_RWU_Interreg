@@ -40,7 +40,7 @@ if __name__ == "__main__":
     ###____________________Speed_Vector______________________________####
     print("_Functioncall_Speed_Vector_")
     Speed_Vector = Datafield_Speed_Vector()
-
+    
     #### Setup for LOOP    # Function State initialisierung
     row_number = 0
     index = 0
@@ -166,7 +166,7 @@ if __name__ == "__main__":
 
 
 
-
+    """
     plt.figure(figsize=(10, 4))
     plt.plot(t_axis, soc, label="SOC")
     plt.xlabel("Zeit [s]")
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.tight_layout()
     #plt.show()
-
+    """
     v = (Speed_Vector.iloc[:, 0].to_numpy(float)) * 3.6
     t = np.arange(len(v)) * dt
     dist = np.cumsum(v * dt)  # meters
