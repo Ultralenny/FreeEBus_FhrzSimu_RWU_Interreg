@@ -2,7 +2,7 @@ Ersteller: Leonard Schmitz, B-Ing., Hochschule Ravensburg-Weingarten
 
 Projekt: Interreg FreeE-Bus
 
-Projektpartner:
+Projektpartner:  
     FHV - Vorarlberg University of Applied Sciences  
     Hochschule Ravensburg-Weingarten  
     illwerke vkw und als externer Dienstleister die vkw vlotte  
