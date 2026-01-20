@@ -192,6 +192,7 @@ if __name__ == "__main__":
     print("_Speed_Vector_Loop_finished_")
     print("_Functioncall_Speed_Vector_finished_")
     print("_Plot_all_Resistances")
+    
     if debug_modus == True:
         if Distanz:
             total_km = Distanz[-1] / 1000.0
@@ -274,11 +275,6 @@ if __name__ == "__main__":
     axes[4].set_ylabel("Gesamt [N]")
     axes[4].set_xlabel("Zeit [s]")
 
-    """
-    axes[5].plot(t_axis, Drehmoment, color="cyan")
-    axes[5].set_ylabel("Drehmoment [Nm]")
-    axes[5].set_xlabel("Zeit [s]")
-    """
     for ax in axes:
         ax.grid(True)
 
