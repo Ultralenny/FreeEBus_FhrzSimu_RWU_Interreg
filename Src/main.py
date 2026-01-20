@@ -63,6 +63,7 @@ if __name__ == "__main__":
     Drehmoment = []
     soc = []
     Energie_usage = []
+    Distanz = []
     t = np.arange(len(Speed_Vector)) * dt  # time axis
     v = Speed_Vector.iloc[:, 0].to_numpy(float)  # speed column
     debug_rows = []
@@ -80,6 +81,7 @@ if __name__ == "__main__":
         )
 
         strecke += velocity * dt
+        Distanz.append(strecke)
         # lineare Interpolation der Steigung auf die aktuelle Strecke
         steigung = float(np.interp(strecke, dist_idx, angles))
         Steigungswinkel.append(steigung)
@@ -190,6 +192,14 @@ if __name__ == "__main__":
     print("_Speed_Vector_Loop_finished_")
     print("_Functioncall_Speed_Vector_finished_")
     print("_Plot_all_Resistances")
+    if debug_modus == True:
+        if Distanz:
+            total_km = Distanz[-1] / 1000.0
+            total_kwh = Energie_usage[-1] if Energie_usage else 0.0
+            kwh_per_100km = (total_kwh / total_km * 100.0) if total_km > 0 else 0.0
+            print(f"Gesamtdistanz: {total_km:.2f} km")
+            print(f"Energieverbrauch: {total_kwh:.2f} kWh")
+            print(f"Spezifisch: {kwh_per_100km:.2f} kWh/100km")
 
 
     plt.figure(figsize=(10, 4))
@@ -217,7 +227,7 @@ if __name__ == "__main__":
     """
     v = (Speed_Vector.iloc[:, 0].to_numpy(float)) * 3.6
     t = np.arange(len(v)) * dt
-    dist = np.cumsum(v * dt)  # meters
+    dist_km = np.array(Distanz) / 1000.0
 
     plt.figure(figsize=(10, 5))
 
@@ -236,7 +246,7 @@ if __name__ == "__main__":
     plt.legend()
 
     plt.subplot(3, 1, 3)
-    plt.plot(t, dist / 1000.0, label="Distanz", color="orange")
+    plt.plot(t_axis, dist_km, label="Distanz", color="orange")
     plt.xlabel("Zeit [s]")
     plt.ylabel("Distanz [km]")
     plt.grid(True)
