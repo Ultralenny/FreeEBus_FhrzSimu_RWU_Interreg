@@ -2,14 +2,12 @@ from dataclasses import dataclass
 from Elektromotor import MotorUebersetzung
 
 @dataclass
-class Config:
+class Volvo_7900E:
     m_Fahrz: float
     m_zusatz: float
     anzahl_passenger: int
     m_passenger: float
     m_ges: float
-    v_max: float
-    n_max: float
     c_r: float
     cw: float
     hoehe: float
@@ -25,7 +23,7 @@ class Config:
 
 
 # Diese Daten entsprechen dem Volvo 7900 Electric Bus
-def build_config() -> Config:
+def build_Volvo_7900E() -> Volvo_7900E:
     m_Fahrz = 18000
     m_zusatz = 200
     
@@ -33,8 +31,6 @@ def build_config() -> Config:
     m_passenger = 75 * anzahl_passenger
     m_ges = m_Fahrz + m_passenger + m_zusatz
 
-    v_max = 120 / 3.6
-    n_max = 11000
     c_r = 0.012
     cw = 0.7
     hoehe = 2.96
@@ -46,17 +42,17 @@ def build_config() -> Config:
     E_Battrie = 565
     Energie_verbrauch = 0
     
+    v_max = 120 / 3.6
+    n_max = 11000
     i = MotorUebersetzung(v_max, n_max, RadDurchmesser)
        
     
-    return Config(
+    return Volvo_7900E(
         m_Fahrz,
         m_zusatz,
         anzahl_passenger,
         m_passenger,
         m_ges,
-        v_max,
-        n_max,
         c_r,
         cw,
         hoehe,

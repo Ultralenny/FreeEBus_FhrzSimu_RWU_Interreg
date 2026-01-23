@@ -1,12 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import Vehicle_Data as vhcD
+
 from FahrRes import *
 from LookupTable import *
 from Elektromotor import *
 from Fahrprofil import *
-from Vehicle_Data import *
 from Loop_Config import *
 from Debug import write_debug_csv
+
+
+
+
 
 #####
 #--------------------------Debug Settings ---------------------------------------------------
@@ -25,7 +30,7 @@ if debug_modus == True:
 
 
 if __name__ == "__main__":
-    param = build_config()
+    param = vhcD.build_Volvo_7900E()
     
     ###_____________Function_______LookupTabelle______________________________####
     print("_Functioncall_LookupTable_")
