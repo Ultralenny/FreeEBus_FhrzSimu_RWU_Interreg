@@ -41,3 +41,23 @@ def load_profile_data():
     angles = range_elevation.iloc[:, 0].to_numpy(float)
     speed_vector = Datafield_Speed_Vector()
     return range_elevation, dist_idx, angles, speed_vector
+
+
+
+
+
+
+
+
+def Testfield_Speed_Vector():
+    Datafield = pd.read_csv(
+        r"Data\SORT1_like_cycle.csv",
+        delimiter=",",
+        header=None,
+        names=["velocity_ms"],
+        decimal=".",
+    )
+    return Datafield
+
+
+Testfield_Speed_Vector()
