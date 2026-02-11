@@ -1,3 +1,7 @@
+import datetime as dt
+import os
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
 import Vehicle_Data as vhcD
@@ -23,6 +27,12 @@ if debug_modus == True:
     debug_csv_decimal_separator = ","
     debug_csv_float_format = ".6f"
 
+def _env_bool(name, default):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+
 
 #####
 ###____________________________________MAIN_LOOP______________________________________________________________________####
@@ -32,11 +42,22 @@ if debug_modus == True:
 if __name__ == "__main__":
     param = vhcD.build_Volvo_7900E()
     
-    ###_____________Function_______LookupTabelle______________________________####
-    print("_Functioncall_LookupTable_")
+    ###_________________Filepaths___________________________________________#####
     path_T = r"Data\Lookuptable\Ltb_Bus\wirk_T.csv"
     path_n = r"Data\Lookuptable\Ltb_Bus\wirk_n.csv"
     path_Z = r"Data\Lookuptable\Ltb_Bus\wirk_Z.csv"
+    
+    default_speed = r"Data\Fahrprofil 410315_6\v_uni_matched_410315_6.csv"
+    default_elevation = r"Data\Fahrprofil 410315_6\inclination_410315_6.csv"
+    path_SpeedVector = os.getenv("FREEEBUS_SPEED_PROFILE", default_speed)
+    path_Elevation = os.getenv("FREEEBUS_ELEV_PROFILE", default_elevation)
+    show_plots = _env_bool("FREEEBUS_SHOW_PLOTS", True)
+    save_plots = _env_bool("FREEEBUS_SAVE_PLOTS", False)
+    plot_dir_env = os.getenv("FREEEBUS_PLOT_DIR")
+    output_dir = Path(plot_dir_env) if plot_dir_env else (Path(__file__).resolve().parents[1] / "Debug" / "plots")
+    ###_____________Function_______LookupTabelle______________________________####
+    print("_Functioncall_LookupTable_")
+    
     
     EM_LookupTable = GenLookupTable(path_T, path_n, path_Z)
     eta_interp = make_eta_interpolator(EM_LookupTable)
@@ -44,13 +65,11 @@ if __name__ == "__main__":
     
     ###____________________Range_und_Elevation______________________________####
     print("_Functioncall_Range_to_elevation_")
-    Range_Elevation = Datafield_range_to_elevation()
-    dist_idx = Range_Elevation.index.to_numpy(float)  # strecke
-    angles = Range_Elevation.iloc[:, 0].to_numpy(float)  # elevation angle
-
+    Range_Elevation, dist_idx, angles = load_Elevation_profile(path_Elevation)
+    
     ###____________________Speed_Vector______________________________####
     print("_Functioncall_Speed_Vector_")
-    Speed_Vector = Datafield_Speed_Vector()
+    Speed_Vector = load_speed_profile(path_SpeedVector)
     
     #### Setup for LOOP    # Function State initialisierung
     row_number = 0
@@ -208,7 +227,10 @@ if __name__ == "__main__":
             print(f"Spezifisch: {kwh_per_100km:.2f} kWh/100km")
 
 
-    plt.figure(figsize=(10, 4))
+    figs = []
+
+    fig = plt.figure(figsize=(10, 4))
+    figs.append(fig)
     plt.plot(t_axis, Energie_usage, label="Energieverbauch in kWh")
     plt.xlabel("Zeit [s]")
     plt.ylabel("Energie [kWh]")
@@ -235,7 +257,8 @@ if __name__ == "__main__":
     t = np.arange(len(v)) * dt
     dist_km = np.array(Distanz) / 1000.0
 
-    plt.figure(figsize=(10, 5))
+    fig = plt.figure(figsize=(10, 5))
+    figs.append(fig)
 
     plt.subplot(3, 1, 1)
     plt.plot(t, v, label="Geschwindigkeit")
@@ -264,6 +287,7 @@ if __name__ == "__main__":
     # ______________________________________________________________________________________________________________________#
 
     fig, axes = plt.subplots(5, 1, figsize=(10, 10), sharex=True)
+    figs.append(fig)
     axes[0].plot(t_axis, F_roll_list, color="tab:blue")
     axes[0].set_ylabel("Roll [N]")
 
@@ -284,7 +308,21 @@ if __name__ == "__main__":
         ax.grid(True)
 
     plt.tight_layout()
-    plt.show()
+
+    if save_plots:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+        speed_tag = Path(path_SpeedVector).stem
+        elev_tag = Path(path_Elevation).stem
+        for idx, fig in enumerate(figs, 1):
+            out_path = output_dir / f"sim_{speed_tag}_{elev_tag}_{timestamp}_{idx}.png"
+            fig.savefig(out_path, dpi=150)
+
+    if show_plots:
+        plt.show()
+    else:
+        for fig in figs:
+            plt.close(fig)
 
 # ______________________________________________________________________________________________________________________#
-print("Main Function: Done")
+    print("Main Function: Done")
