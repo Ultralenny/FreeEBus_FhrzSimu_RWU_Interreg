@@ -134,9 +134,7 @@ if __name__ == "__main__":
         eta_Ltb = eta_interp((trq_motor, n_Motor))  # mit [Torque, RPM]
         
 
-        Fahrleistung_EL = (
-            Fahrleistung(F_trac, velocity, eta_Ltb) / 1000
-        )  # elektrische Leistung in kW
+        Fahrleistung_EL = (Fahrleistung(F_trac, velocity, eta_Ltb) / 1000)  # elektrische Leistung in kW
        
         ##          Rekuperation
         P_mech = F_ges * velocity  # W, can be negative

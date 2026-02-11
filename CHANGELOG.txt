@@ -1,3 +1,16 @@
+
+Version 1.1
+    added multiple Drivecycles
+        WLTP
+        SORT
+    added additonal elevation profil
+        zero elevation
+
+    added GUI
+        run GUI.py 
+        easy access to different profils and Graphs
+
+
 Version 1.0     -14.01.2026
     Start of complete project
     correction of FilePath-errors:
