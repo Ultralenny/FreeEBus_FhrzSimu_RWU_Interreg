@@ -1,11 +1,9 @@
 import datetime as dt
 import os
 from pathlib import Path
-
 import numpy as np
 import matplotlib.pyplot as plt
 import Vehicle_Data as vhcD
-
 from FahrRes import *
 from LookupTable import *
 from Elektromotor import *
