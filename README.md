@@ -1,4 +1,4 @@
-Ersteller: Leonard Schmitz, B-Ing., Hochschule Ravensburg-Weingarten
+Ersteller: Leonard Schmitz, Hochschule Ravensburg-Weingarten
 
 Projekt: Interreg FreeE-Bus
 
