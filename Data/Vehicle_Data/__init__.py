@@ -5,6 +5,7 @@ from .Mercedes_eCitaro import Mercedes_eCitaro, build_Mercedes_eCitaro
 from .Solaris_Urbino_9E import Solaris_Urbino_9E, build_Solaris_Urbino_9E
 from .Solaris_Urbino_12E import Solaris_Urbino_12E, build_Solaris_Urbino_12E
 from .Volvo_7900e import Volvo_7900E, build_Volvo_7900E
+from .Mercedes_Actros import Mercedes_Actros, build_Mercedes_Actros
 
 __all__ = (
     "MAN_CityLion_10E",
@@ -14,6 +15,7 @@ __all__ = (
     "Solaris_Urbino_9E",
     "Solaris_Urbino_12E",
     "Volvo_7900E",
+    "Mercedes_Actros",
     "build_MAN_Lion10E",
     "build_MAN_Lions_City_12e",
     "build_MAN_Lions_City_18e",
@@ -21,4 +23,5 @@ __all__ = (
     "build_Solaris_Urbino_9E",
     "build_Solaris_Urbino_12E",
     "build_Volvo_7900E",
+    "build_Mercedes_Actros",
 )

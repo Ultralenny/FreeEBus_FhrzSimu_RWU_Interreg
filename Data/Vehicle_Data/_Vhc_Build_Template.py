@@ -1,9 +1,6 @@
 from dataclasses import dataclass
 from Elektromotor import MotorUebersetzung
 
-
-
-
 @dataclass
 class Your_VehicleName:
     m_Fahrz: float
@@ -23,8 +20,6 @@ class Your_VehicleName:
     Energie_verbrauch: float
     i : float
     
-
-
 # Diese Daten entsprechen dem Volvo 7900 Electric Bus
 def build_Your_VehicleName() -> Your_VehicleName:
     m_Fahrz = 0

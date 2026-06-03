@@ -3,14 +3,14 @@ import os
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
-import Vehicle_Data as vhcD
+
+from Data.Vehicle_Data import *
 from FahrRes import *
 from LookupTable import *
 from Elektromotor import *
 from Fahrprofil import *
 from Loop_Config import *
 from Debug import write_debug_csv
-
 
 
 
@@ -38,15 +38,18 @@ def _env_bool(name, default):
 
 
 if __name__ == "__main__":
-    param = vhcD.build_Volvo_7900E()
-    
+    #param = build_Volvo_7900E()
+    param = build_Mercedes_Actros()
     ###_________________Filepaths___________________________________________#####
     path_T = r"Data\Lookuptable\Ltb_Bus\wirk_T.csv"
     path_n = r"Data\Lookuptable\Ltb_Bus\wirk_n.csv"
     path_Z = r"Data\Lookuptable\Ltb_Bus\wirk_Z.csv"
     
-    default_speed = r"Data\Fahrprofil 410315_6\v_uni_matched_410315_6.csv"
-    default_elevation = r"Data\Fahrprofil 410315_6\inclination_410315_6.csv"
+    #default_speed = r"Data\Fahrprofil 410315_6\v_uni_matched_410315_6.csv"
+    default_speed = r"Data\Fahrprofil 410315_6\Valdierung_22m_s_1Stunde.csv"
+    # default_elevation = r"Data\Fahrprofil 410315_6\inclination_410315_6.csv"
+    default_elevation = r"Data\Hoehen-Profil\inclination_flat_0.csv"
+    
     path_SpeedVector = os.getenv("FREEEBUS_SPEED_PROFILE", default_speed)
     path_Elevation = os.getenv("FREEEBUS_ELEV_PROFILE", default_elevation)
     show_plots = _env_bool("FREEEBUS_SHOW_PLOTS", True)
@@ -85,10 +88,24 @@ if __name__ == "__main__":
     Drehmoment = []
     soc = []
     Energie_usage = []
+    Nebeverbrauch_Gesamt = []
     Distanz = []
     t = np.arange(len(Speed_Vector)) * dt  # time axis
     v = Speed_Vector.iloc[:, 0].to_numpy(float)  # speed column
     debug_rows = []
+
+    # ========== NEBENVERBRAUCH KONFIGURATION ==========
+    # Jahreszeit für Nebenverbäuche // 1 = Frühling; 2 = Sommer; 3 = Herbst; 4 = Winter
+    Jahreszeit = 1 
+    Nebenverbauch_kwh_base = Nebenverbauch(Jahreszeit)  # Basis-Nebenverbrauch pro Sekunde
+    print(f"Basis-Nebenverbrauch: {Nebenverbauch_kwh_base} kWh/s")
+    
+    # ========== STILLSTANDS-TRACKING ==========
+    stillstand_counter = 0  # Zähler für Stillstandszeit in Sekunden
+    stillstand_threshold = 120  # 2 Minuten = 120 Sekunden
+    velocity_threshold = 0.5  # Geschwindigkeit unter 0.5 m/s = Stillstand
+    Nebenverbauch_tracking = []  # Zum Debuggen: Nebenverbrauch pro Iteration speichern
+    
 
     #####________________________________________Main_FOR_LOOP_____________________________________________________#####
 
@@ -101,7 +118,7 @@ if __name__ == "__main__":
         acceleration = float(
             (Speed_Vector.iloc[index + 1, 0] - Speed_Vector.iloc[index, 0]) / dt
         )
-
+        
         strecke += velocity * dt
         Distanz.append(strecke)
         # lineare Interpolation der Steigung auf die aktuelle Strecke
@@ -141,12 +158,28 @@ if __name__ == "__main__":
         else:
             P_batt_kW = (P_mech * param.eta_reku) / 1000.0  # regen charges battery (negative)
 
+        # ========== NEBENVERBRAUCH-LOGIK VERBESSERT ==========
+        # Prüfe, ob der Bus stillsteht
+        if velocity < velocity_threshold:  # Bus steht
+            stillstand_counter += dt  # Inkrementiere Stillstandszeit
+        else:  # Bus fährt
+            stillstand_counter = 0  # Setze Zähler zurück
+        
+        # Bestimme Nebenverbrauch basierend auf Stillstandsdauer
+        if stillstand_counter >= stillstand_threshold:
+            # Nach 2 Minuten Stillstand: Nebenverbrauch = 0
+            Nebenverbauch_kwh = 0.0
+        else:
+            # Ansonsten: Normaler Nebenverbrauch (auch während Stillstand, aber < 2 Min)
+            Nebenverbauch_kwh = Nebenverbauch_kwh_base * (dt / 3600.0)
+
+        # Energie hinzufügen
         param.Energie_verbrauch = min(
             param.E_Battrie,
-            max(0.0, param.Energie_verbrauch + P_batt_kW * (dt / 3600.0)),
+            max(0.0, param.Energie_verbrauch + Nebenverbauch_kwh + P_batt_kW * (dt / 3600.0)),
         )
         Energie_usage.append(param.Energie_verbrauch)
-        
+        Nebeverbrauch_Gesamt.append(Nebenverbauch_kwh)
         
         
         State_of_Charge = 100.0 * (1.0 - param.Energie_verbrauch / param.E_Battrie)
@@ -172,6 +205,8 @@ if __name__ == "__main__":
                     "trq_motor_nm": float(trq_motor),
                     "eta_ltb": float(eta_Ltb),
                     "fahrleistung_el_kw": float(Fahrleistung_EL),
+                    "nebenverbauch_kwh": float(Nebenverbauch_kwh),
+                    "stillstand_counter_s": float(stillstand_counter),
                     "energie_verbrauch_kwh": float(param.Energie_verbrauch),
                     "state_of_charge_pct": float(State_of_Charge),
                 }
@@ -182,6 +217,8 @@ if __name__ == "__main__":
             
             print(f"Geschwindigkeit:        {velocity:.1f} m/s")
             print(f"Beschleunigung:        {acceleration:.1f} m/s^2")
+            print(f"Stillstand Counter:     {stillstand_counter:.1f} s")
+            print(f"Nebenverbrauch:         {Nebenverbauch_kwh:.6f} kWh")
             print(f"Rollwiderstand:         {F_roll:.1f} N")
             print(f"Luftwiderstand:         {F_luft:.1f} N")
             print(f"Steigungswiderstand:    {F_steig:.1f} N")
@@ -206,8 +243,7 @@ if __name__ == "__main__":
             decimal_separator=debug_csv_decimal_separator,
             float_format=debug_csv_float_format,
         )
-        
-    # ______________________________________________________________________________________________________________________#
+        # ______________________________________________________________________________________________________________________#
 
     print("_Speed_Vector_Loop_finished_")
     print("_Functioncall_Speed_Vector_finished_")
@@ -221,7 +257,6 @@ if __name__ == "__main__":
             print(f"Gesamtdistanz: {total_km:.2f} km")
             print(f"Energieverbrauch: {total_kwh:.2f} kWh")
             print(f"Spezifisch: {kwh_per_100km:.2f} kWh/100km")
-
 
     figs = []
 

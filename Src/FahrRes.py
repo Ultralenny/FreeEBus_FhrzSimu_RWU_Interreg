@@ -39,6 +39,10 @@ def kurvenwiderstand(
     a_q = v_m_s**2 / kurvenradius_m
     return widerstandsbeiwert * masse_kg * a_q
 
+def TrailerWiderstand() -> float:
+
+    return 0
+
 
 def gesamtfahrwiderstand(*kraefte_neu: float) -> float:
     return sum(kraefte_neu)

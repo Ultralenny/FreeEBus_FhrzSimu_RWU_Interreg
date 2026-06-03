@@ -67,10 +67,24 @@ def load_speed_profile(path):
         v_ms = df["velocity_ms"].astype(float)
     elif "speed_kph" in df.columns:
         v_ms = df["speed_kph"].astype(float) / 3.6
+    elif "v_kmh" in df.columns:
+        v_ms = df["v_kmh"].astype(float) / 3.6
     else:
         first_col = df.columns[0]
         v_ms = df[first_col].astype(float)
     return v_ms.to_frame(name="velocity_ms")
+
+
+def load_route_profile(path):
+    """Load a combined route CSV (t_s, s_m, v_kmh, slope_rad) and return normalised DataFrame."""
+    df = _read_table_raw(_resolve_data_path(path), header=0)
+    if 'v_kmh' in df.columns:
+        df['velocity_ms'] = df['v_kmh'].astype(float) / 3.6
+    elif 'speed_kph' in df.columns:
+        df['velocity_ms'] = df['speed_kph'].astype(float) / 3.6
+    elif 'velocity_ms' not in df.columns:
+        df['velocity_ms'] = df.iloc[:, 0].astype(float)
+    return df
 
 
 def Datafield_Speed_Vector(path=r"Data\Fahrprofil 410315_6\v_uni_matched_410315_6.csv"):
@@ -107,5 +121,19 @@ def Testfield_Speed_Vector(path=r"Data\SORT1_like_cycle.csv"):
     Datafield["velocity_ms"] = Datafield["speed_kph"] / 3.6
     return Datafield[["velocity_ms"]]
 
-
-TestCSV = Testfield_Speed_Vector()
+def Nebenverbauch(Jahreszeit):
+    match (Jahreszeit):
+        case 0:                 # Nebenverbrauch aus 
+            return 0
+        case 1:                 # Nebenverbrauch für Frühling
+            return 10 / 3600
+        case 2:                 # Nebenverbrauch für Sommer
+            return 20 / 3600
+        case 3:                 # Nebenverbrauch für Herbst
+            return 15 / 3600
+        case 4:                 # Nebenverbrauch für Winter
+            return 20 / 3600
+        case _:
+            return 0 
+            
+            
