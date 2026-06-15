@@ -22,7 +22,7 @@ def GenLookupTable(path_T, path_n, path_Z):
     # Werte kommen als Prozentangaben (z.B. 85 = 85 %); in Faktoren umwandeln
     lookup = lookup / 100.0
 
-    print("Lookuptabelle erfolgreich gebaut!")
+    print("_Lookuptabelle erfolgreich erstellt!_")
     return lookup
 
 

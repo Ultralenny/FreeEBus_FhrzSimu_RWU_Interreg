@@ -39,7 +39,7 @@ def build_Mercedes_eCitaro() -> Mercedes_eCitaro:
     eta_Antrieb = 0.9
     eta_reku = 0.7
     E_Battrie = 666
-    Energie_verbrauch = 0
+    max_Leistung = 290 # Maximale Leistung in kW
     i = 8.56 # Gesamt übersetzung (Antriebübersetzung * Achsübersetzung)
 
     return Mercedes_eCitaro(

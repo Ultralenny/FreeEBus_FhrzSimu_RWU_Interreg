@@ -95,6 +95,7 @@ if __name__ == "__main__":
         velocity = velocity_array_ms[index]
         acceleration = (velocity_array_ms[index + 1] - velocity_array_ms[index]) / dt
 
+
         strecke = strecke_array_m[index]
         steigung = Steigung_array_rad[index] * (180 / math.pi )
         Distanz.append(strecke)
